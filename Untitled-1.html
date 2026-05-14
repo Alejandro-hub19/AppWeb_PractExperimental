@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SportEdu – Gestión de Escuelas Deportivas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== DESIGN TOKENS ===== */
+    :root {
+      --brand:       #0d6efd;
+      --brand-dark:  #0a4fa8;
+      --brand-light: #d9e8ff;
+      --accent:      #ff5722;
+      --accent-d:    #bf3a0d;
+      --success:     #1a9e6e;
+      --warning:     #e09300;
+      --danger:      #d32f2f;
+      --bg:          #f4f6fb;
+      --surface:     #ffffff;
+      --surface2:    #eef1f8;
+      --border:      #d0d9f0;
+      --text:        #12192b;
+      --muted:       #5a6478;
+      --radius:      12px;
+      --radius-sm:   8px;
+      --shadow:      0 2px 12px rgba(13,110,253,.08);
+      --shadow-md:   0 4px 24px rgba(13,110,253,.14);
+      --font:        'DM Sans', sans-serif;
+      --font-display:'Bebas Neue', sans-serif;
+      --font-mono:   'JetBrains Mono', monospace;
+      --nav-w:       260px;
+      --header-h:    64px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ===== SIDEBAR ===== */
+    #sidebar {
+      width: var(--nav-w);
+      background: var(--text);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      transition: transform .28s ease;
+    }
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 10px;
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: 20px; color: #fff; letter-spacing: 1px;
+    }
+    .logo-text { font-family: var(--font-display); font-size: 22px; letter-spacing: 2px; color: #fff; }
+    .logo-sub  { font-size: 10px; color: rgba(255,255,255,.45); letter-spacing: 1.5px; text-transform: uppercase; margin-top: -4px; }
+
+    nav { flex: 1; overflow-y: auto; padding: 16px 0; }
+    .nav-section { font-size: 10px; text-transform: uppercase; letter-spacing: 1.8px; color: rgba(255,255,255,.3); padding: 16px 20px 6px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 20px; cursor: pointer; border-radius: 0;
+      color: rgba(255,255,255,.7);
+      font-size: 14px; font-weight: 400;
+      transition: all .18s;
+      border-left: 3px solid transparent;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.07); color: #fff; }
+    .nav-item.active { background: rgba(13,110,253,.22); color: #fff; border-left-color: var(--brand); }
+    .nav-item .ni { font-size: 18px; }
+    .nav-badge {
+      margin-left: auto; background: var(--accent);
+      border-radius: 20px; padding: 1px 8px;
+      font-size: 11px; color: #fff; font-weight: 700;
+    }
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      font-size: 12px; color: rgba(255,255,255,.35);
+      font-family: var(--font-mono);
+    }
+
+    /* ===== MAIN LAYOUT ===== */
+    #main { margin-left: var(--nav-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* ===== TOPBAR ===== */
+    header {
+      height: var(--header-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+      padding: 0 28px;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .page-title { font-family: var(--font-display); font-size: 26px; letter-spacing: 2px; color: var(--text); }
+    .header-spacer { flex: 1; }
+    .search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 24px; padding: 6px 14px; width: 220px;
+      font-size: 13px; color: var(--muted);
+    }
+    .search-box input {
+      border: none; background: transparent; outline: none;
+      font-family: var(--font); font-size: 13px; color: var(--text); width: 100%;
+    }
+    .header-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--surface2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 16px; color: var(--muted);
+      transition: all .18s;
+    }
+    .header-btn:hover { background: var(--brand-light); color: var(--brand); border-color: var(--brand); }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--brand); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+
+    /* ===== CONTENT ===== */
+    #content { flex: 1; padding: 28px; }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ===== KPI CARDS ===== */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; margin-bottom: 28px; }
+    .kpi-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 22px;
+      box-shadow: var(--shadow); position: relative; overflow: hidden;
+    }
+    .kpi-card::after {
+      content: ''; position: absolute; top: 0; right: 0;
+      width: 80px; height: 80px;
+      background: radial-gradient(circle, var(--kpi-color, var(--brand-light)) 0%, transparent 70%);
+      border-radius: 0 0 0 80px;
+    }
+    .kpi-icon { font-size: 22px; margin-bottom: 10px; color: var(--kpi-color, var(--brand)); }
+    .kpi-val { font-family: var(--font-display); font-size: 36px; letter-spacing: 1px; line-height: 1; }
+    .kpi-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+    .kpi-trend { font-size: 12px; font-weight: 600; margin-top: 8px; }
+    .kpi-trend.up { color: var(--success); }
+    .kpi-trend.down { color: var(--danger); }
+
+    /* ===== TABLES ===== */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px;
+      box-shadow: var(--shadow); margin-bottom: 24px;
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .card-title { font-family: var(--font-display); font-size: 20px; letter-spacing: 1.5px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 18px; border-radius: var(--radius-sm);
+      font-family: var(--font); font-size: 13px; font-weight: 500;
+      cursor: pointer; border: none; transition: all .18s;
+    }
+    .btn-primary { background: var(--brand); color: #fff; }
+    .btn-primary:hover { background: var(--brand-dark); }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: var(--surface2); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left; padding: 10px 14px;
+      font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px;
+      color: var(--muted); border-bottom: 2px solid var(--border);
+    }
+    td { padding: 12px 14px; border-bottom: 1px solid var(--surface2); font-size: 14px; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+
+    .badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 20px; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .8px;
+    }
+    .badge-success { background: #dcf5eb; color: #0f6e41; }
+    .badge-warning { background: #fff4d9; color: #a36200; }
+    .badge-danger  { background: #ffe8e8; color: #9c1e1e; }
+    .badge-info    { background: #dbeafe; color: #1e40af; }
+    .badge-purple  { background: #ede9fe; color: #5b21b6; }
+
+    .actions { display: flex; gap: 6px; }
+
+    /* ===== FORM ===== */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1/-1; }
+    label { font-size: 13px; font-weight: 500; color: var(--muted); }
+    input, select, textarea {
+      padding: 9px 13px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-family: var(--font); font-size: 14px;
+      outline: none; background: var(--surface); color: var(--text);
+      transition: border-color .18s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--brand); }
+    textarea { resize: vertical; min-height: 80px; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(12,25,48,.55); z-index: 999;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 30px; width: min(560px, 96vw); max-height: 90vh;
+      overflow-y: auto; box-shadow: var(--shadow-md);
+      animation: slideUp .25s ease;
+    }
+    @keyframes slideUp { from { opacity:0; transform: translateY(24px); } to { opacity:1; transform: none; } }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+    .modal-title { font-family: var(--font-display); font-size: 22px; letter-spacing: 1.5px; }
+    .modal-close { font-size: 22px; cursor: pointer; color: var(--muted); line-height: 1; }
+    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+
+    /* ===== WEATHER WIDGET ===== */
+    .weather-card {
+      background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+      color: #fff; border-radius: var(--radius); padding: 22px;
+      box-shadow: var(--shadow-md);
+    }
+    .weather-main { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+    .weather-temp { font-family: var(--font-display); font-size: 56px; line-height: 1; }
+    .weather-icon { font-size: 48px; }
+    .weather-desc { font-size: 16px; opacity: .85; }
+    .weather-meta { font-size: 13px; opacity: .7; margin-top: 4px; }
+    .weather-details { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.2); }
+    .w-detail { text-align: center; }
+    .w-detail-val { font-size: 18px; font-weight: 700; }
+    .w-detail-lbl { font-size: 11px; opacity: .65; text-transform: uppercase; letter-spacing: .8px; }
+
+    /* ===== SCHEDULE ===== */
+    .schedule-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 8px; }
+    .day-col { background: var(--surface2); border-radius: var(--radius-sm); overflow: hidden; }
+    .day-header { background: var(--brand); color: #fff; text-align: center; padding: 8px 4px; font-size: 12px; font-weight: 600; }
+    .day-body { padding: 6px; }
+    .sched-item {
+      background: var(--surface); border-left: 3px solid var(--item-color, var(--brand));
+      border-radius: 4px; padding: 6px 8px; margin-bottom: 6px; font-size: 11px;
+    }
+    .sched-item strong { display: block; font-size: 12px; }
+
+    /* ===== STAT CHART (pure CSS) ===== */
+    .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+    .bar-row { display: flex; align-items: center; gap: 12px; }
+    .bar-label { width: 100px; font-size: 13px; color: var(--muted); text-align: right; flex-shrink: 0; }
+    .bar-track { flex: 1; background: var(--surface2); border-radius: 4px; height: 18px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--brand); border-radius: 4px; transition: width .6s ease; }
+    .bar-val { width: 40px; font-size: 13px; font-weight: 600; color: var(--text); }
+
+    /* ===== API SECTION ===== */
+    .api-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .fact-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .fact-sport { font-family: var(--font-display); font-size: 18px; letter-spacing: 1px; color: var(--brand); }
+    .fact-text { font-size: 14px; line-height: 1.6; color: var(--text); }
+    .fact-source { font-size: 11px; color: var(--muted); font-family: var(--font-mono); }
+    .loading { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
+    .spinner {
+      width: 32px; height: 32px; border: 3px solid var(--border);
+      border-top-color: var(--brand); border-radius: 50%;
+      animation: spin .8s linear infinite; margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== TOAST ===== */
+    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+    .toast {
+      background: var(--text); color: #fff; padding: 12px 18px;
+      border-radius: var(--radius-sm); font-size: 14px; min-width: 220px;
+      box-shadow: var(--shadow-md); animation: toastIn .25s ease;
+      display: flex; align-items: center; gap: 10px;
+    }
+    @keyframes toastIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: none; } }
+    .toast.success { border-left: 4px solid var(--success); }
+    .toast.error   { border-left: 4px solid var(--danger); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      #sidebar { transform: translateX(-100%); }
+      #sidebar.open { transform: none; }
+      #main { margin-left: 0; }
+      .form-grid { grid-template-columns: 1fr; }
+      .api-grid { grid-template-columns: 1fr; }
+      .schedule-grid { grid-template-columns: repeat(3,1fr); }
+      .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    }
+
+    .hamburger { display: none; }
+    @media (max-width: 900px) {
+      .hamburger { display: flex; }
+    }
+
+    /* ===== ATHLETE AVATAR ===== */
+    .ath-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .cell-athlete { display: flex; align-items: center; gap: 10px; }
+
+    /* ===== PAGE HERO ===== */
+    .page-hero {
+      background: var(--text); color: #fff;
+      border-radius: var(--radius); padding: 28px 32px;
+      margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .page-hero h1 { font-family: var(--font-display); font-size: 34px; letter-spacing: 3px; }
+    .page-hero p { font-size: 14px; color: rgba(255,255,255,.6); margin-top: 4px; }
+    .hero-icon { font-size: 60px; opacity: .15; }
+
+    /* ===== PROGRESS BAR ===== */
+    .progress { background: var(--surface2); border-radius: 4px; height: 6px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; background: var(--brand); }
+
+    /* ===== TABS ===== */
+    .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+    .tab {
+      padding: 9px 18px; cursor: pointer; font-size: 14px; font-weight: 500;
+      color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -2px;
+      transition: all .18s;
+    }
+    .tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* extra tweaks */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width:700px){ .two-col { grid-template-columns: 1fr; } }
+
+    select { cursor: pointer; }
+    .text-muted { color: var(--muted); font-size: 13px; }
+
+    /* ===== NOTIFICATIONS ===== */
+    .notif-list { display: flex; flex-direction: column; gap: 10px; }
+    .notif-item {
+      display: flex; gap: 14px; padding: 14px;
+      background: var(--surface2); border-radius: var(--radius-sm);
+      border-left: 3px solid var(--notif-color, var(--brand));
+    }
+    .notif-body { font-size: 14px; }
+    .notif-time { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center; padding: 18px;
+      font-size: 12px; color: var(--muted);
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">SE</div>
+    <div>
+      <div class="logo-text">SportEdu</div>
+      <div class="logo-sub">Gestión Deportiva</div>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" onclick="navigate('dashboard')">
+      <span class="ni">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="navigate('clima')">
+      <span class="ni">🌤️</span> Clima & Canchas
+    </div>
+
+    <div class="nav-section">Gestión</div>
+    <div class="nav-item" onclick="navigate('escuelas')">
+      <span class="ni">🏫</span> Escuelas
+    </div>
+    <div class="nav-item" onclick="navigate('atletas')">
+      <span class="ni">🏃</span> Atletas <span class="nav-badge" id="badge-atletas">24</span>
+    </div>
+    <div class="nav-item" onclick="navigate('entrenadores')">
+      <span class="ni">🎽</span> Entrenadores
+    </div>
+    <div class="nav-item" onclick="navigate('horarios')">
+      <span class="ni">📅</span> Horarios
+    </div>
+
+    <div class="nav-section">Datos</div>
+    <div class="nav-item" onclick="navigate('paises')">
+      <span class="ni">🌎</span> Datos de Países
+    </div>
+    <div class="nav-item" onclick="navigate('reportes')">
+      <span class="ni">📈</span> Reportes
+    </div>
+    <div class="nav-item" onclick="navigate('notificaciones')">
+      <span class="ni">🔔</span> Notificaciones <span class="nav-badge">3</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">v1.0.0 · SportEdu © 2025</div>
+</aside>
+
+<!-- ==================== MAIN ==================== -->
+<div id="main">
+  <header>
+    <button class="header-btn hamburger" onclick="toggleSidebar()" title="Menú">☰</button>
+    <span class="page-title" id="header-title">DASHBOARD</span>
+    <div class="header-spacer"></div>
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" placeholder="Buscar..." id="global-search" onkeyup="globalSearch(this.value)" />
+    </div>
+    <button class="header-btn" onclick="navigate('notificaciones')" title="Notificaciones">🔔</button>
+    <div class="avatar" title="Admin">AD</div>
+  </header>
+
+  <main id="content">
+
+    <!-- ===================== DASHBOARD ===================== -->
+    <section id="sec-dashboard" class="section active">
+      <div class="page-hero">
+        <div>
+          <h1>BIENVENIDO</h1>
+          <p>Sistema de Gestión de Escuelas Deportivas — Panel Principal</p>
+        </div>
+        <div class="hero-icon">🏆</div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card" style="--kpi-color:#d9e8ff">
+          <div class="kpi-icon">🏫</div>
+          <div class="kpi-val" id="kpi-escuelas">5</div>
+          <div class="kpi-lbl">Escuelas Activas</div>
+          <div class="kpi-trend up">↑ +1 este mes</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:#dcf5eb">
+          <div class="kpi-icon">🏃</div>
+          <div class="kpi-val" id="kpi-atletas">24</div>
+          <div class="kpi-lbl">Atletas Inscritos</div>
+          <div class="kpi-trend up">↑ +3 esta semana</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:#fff4d9">
+          <div class="kpi-icon">🎽</div>
+          <div class="kpi-val" id="kpi-entrenadores">8</div>
+          <div class="kpi-lbl">Entrenadores</div>
+          <div class="kpi-trend up">↑ +1</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:#ffe8e8">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-val">$4.8k</div>
+          <div class="kpi-lbl">Ingresos Mensuales</div>
+          <div class="kpi-trend down">↓ -2% vs mes ant.</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">INSCRIPCIONES POR DEPORTE</div>
+          </div>
+          <div class="bar-chart" id="bar-chart-sports"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">ACTIVIDAD RECIENTE</div>
+          </div>
+          <div id="actividad-list"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">ATLETAS DESTACADOS</div>
+          <button class="btn btn-outline btn-sm" onclick="navigate('atletas')">Ver todos</button>
+        </div>
+        <table>
+          <thead><tr><th>Atleta</th><th>Escuela</th><th>Deporte</th><th>Asistencia</th><th>Estado</th></tr></thead>
+          <tbody id="dash-atletas-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== CLIMA ===================== -->
+    <section id="sec-clima" class="section">
+      <div class="page-hero">
+        <div><h1>CLIMA & CANCHAS</h1><p>Condiciones climáticas para la práctica deportiva</p></div>
+        <div class="hero-icon">🌤️</div>
+      </div>
+      <div class="two-col">
+        <div>
+          <div class="weather-card" id="weather-card">
+            <div class="loading"><div class="spinner"></div>Cargando clima...</div>
+          </div>
+          <div class="card" style="margin-top:20px">
+            <div class="card-header"><div class="card-title">ESTADO DE CANCHAS</div></div>
+            <table>
+              <thead><tr><th>Cancha</th><th>Deporte</th><th>Capacidad</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>Cancha A1</td><td>Fútbol</td><td>22</td><td><span class="badge badge-success">Disponible</span></td></tr>
+                <tr><td>Cancha B2</td><td>Baloncesto</td><td>10</td><td><span class="badge badge-success">Disponible</span></td></tr>
+                <tr><td>Piscina C</td><td>Natación</td><td>16</td><td><span class="badge badge-warning">Mantenimiento</span></td></tr>
+                <tr><td>Pista D</td><td>Atletismo</td><td>30</td><td><span class="badge badge-success">Disponible</span></td></tr>
+                <tr><td>Gimnasio E</td><td>Gimnasia</td><td>20</td><td><span class="badge badge-danger">Ocupada</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">CONDICIÓN PARA ENTRENAMIENTO</div></div>
+          <p class="text-muted" style="margin-bottom:16px">Basado en las condiciones actuales del clima:</p>
+          <div id="condicion-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ESCUELAS ===================== -->
+    <section id="sec-escuelas" class="section">
+      <div class="page-hero">
+        <div><h1>ESCUELAS DEPORTIVAS</h1><p>Gestión de centros de entrenamiento</p></div>
+        <div class="hero-icon">🏫</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">LISTA DE ESCUELAS</div>
+          <button class="btn btn-primary" onclick="openModal('modal-escuela')">+ Nueva Escuela</button>
+        </div>
+        <table>
+          <thead><tr><th>Nombre</th><th>Deporte</th><th>Director</th><th>Atletas</th><th>Capacidad</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="escuelas-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== ATLETAS ===================== -->
+    <section id="sec-atletas" class="section">
+      <div class="page-hero">
+        <div><h1>ATLETAS</h1><p>Registro y seguimiento de deportistas</p></div>
+        <div class="hero-icon">🏃</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">REGISTRO DE ATLETAS</div>
+          <div style="display:flex;gap:10px">
+            <select id="filtro-deporte" onchange="filtrarAtletas()">
+              <option value="">Todos los deportes</option>
+              <option value="Fútbol">Fútbol</option>
+              <option value="Natación">Natación</option>
+              <option value="Atletismo">Atletismo</option>
+              <option value="Baloncesto">Baloncesto</option>
+              <option value="Gimnasia">Gimnasia</option>
+            </select>
+            <button class="btn btn-primary" onclick="openModal('modal-atleta')">+ Nuevo Atleta</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Atleta</th><th>Edad</th><th>Deporte</th><th>Escuela</th><th>Asistencia</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="atletas-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== ENTRENADORES ===================== -->
+    <section id="sec-entrenadores" class="section">
+      <div class="page-hero">
+        <div><h1>ENTRENADORES</h1><p>Equipo de profesores y técnicos</p></div>
+        <div class="hero-icon">🎽</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">EQUIPO TÉCNICO</div>
+          <button class="btn btn-primary" onclick="openModal('modal-entrenador')">+ Nuevo Entrenador</button>
+        </div>
+        <table>
+          <thead><tr><th>Entrenador</th><th>Especialidad</th><th>Escuela</th><th>Certificación</th><th>Atletas</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="entrenadores-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== HORARIOS ===================== -->
+    <section id="sec-horarios" class="section">
+      <div class="page-hero">
+        <div><h1>HORARIOS</h1><p>Planificación semanal de entrenamientos</p></div>
+        <div class="hero-icon">📅</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">SEMANA ACTUAL</div>
+          <button class="btn btn-primary" onclick="openModal('modal-horario')">+ Nueva Clase</button>
+        </div>
+        <div class="schedule-grid" id="schedule-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===================== PAÍSES (API REST COUNTRIES) ===================== -->
+    <section id="sec-paises" class="section">
+      <div class="page-hero">
+        <div><h1>DATOS DE PAÍSES</h1><p>Información de países vía REST Countries API pública</p></div>
+        <div class="hero-icon">🌎</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">BÚSQUEDA DE PAÍSES</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <input type="text" id="pais-search" placeholder="Buscar país..." style="width:220px" onkeyup="buscarPais(this.value)" />
+            <span class="text-muted" id="pais-count"></span>
+          </div>
+        </div>
+        <div class="loading" id="paises-loading"><div class="spinner"></div>Conectando con REST Countries API...</div>
+        <div class="api-grid" id="paises-grid" style="display:none"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px">ℹ️ FUENTE DE LA API</div>
+        <div style="font-size:13px;color:var(--muted);font-family:var(--font-mono)">
+          Endpoint: <strong>https://restcountries.com/v3.1/all</strong><br>
+          Datos obtenidos en tiempo real • Consumo ES6+ fetch() con async/await
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== REPORTES ===================== -->
+    <section id="sec-reportes" class="section">
+      <div class="page-hero">
+        <div><h1>REPORTES</h1><p>Estadísticas y análisis de rendimiento</p></div>
+        <div class="hero-icon">📈</div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">INSCRIPCIONES MENSUALES</div></div>
+          <div class="bar-chart" id="rep-mensual"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">ASISTENCIA PROMEDIO</div></div>
+          <div class="bar-chart" id="rep-asistencia"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">RESUMEN FINANCIERO</div></div>
+        <div class="kpi-grid">
+          <div class="kpi-card" style="--kpi-color:#dcf5eb"><div class="kpi-icon">💵</div><div class="kpi-val">$4,820</div><div class="kpi-lbl">Ingresos Mayo</div><div class="kpi-trend up">↑ +8%</div></div>
+          <div class="kpi-card" style="--kpi-color:#ffe8e8"><div class="kpi-icon">💸</div><div class="kpi-val">$2,150</div><div class="kpi-lbl">Gastos Mayo</div><div class="kpi-trend down">↓ -3%</div></div>
+          <div class="kpi-card" style="--kpi-color:#d9e8ff"><div class="kpi-icon">📊</div><div class="kpi-val">$2,670</div><div class="kpi-lbl">Utilidad Neta</div><div class="kpi-trend up">↑ +15%</div></div>
+          <div class="kpi-card" style="--kpi-color:#fff4d9"><div class="kpi-icon">🎯</div><div class="kpi-val">92%</div><div class="kpi-lbl">Meta Alcanzada</div><div class="kpi-trend up">↑ +7%</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== NOTIFICACIONES ===================== -->
+    <section id="sec-notificaciones" class="section">
+      <div class="page-hero">
+        <div><h1>NOTIFICACIONES</h1><p>Alertas y avisos del sistema</p></div>
+        <div class="hero-icon">🔔</div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">NOTIFICACIONES RECIENTES</div><button class="btn btn-outline btn-sm" onclick="marcarLeidas()">Marcar todas leídas</button></div>
+        <div class="notif-list" id="notif-list"></div>
+      </div>
+    </section>
+
+  </main><!-- /content -->
+
+  <footer>SportEdu v1.0 &nbsp;|&nbsp; Práctica Experimental Unidad I &nbsp;|&nbsp; HTML5 · CSS3 · JavaScript ES6+ · REST Countries API</footer>
+</div><!-- /main -->
+
+<!-- ==================== MODALES ==================== -->
+
+<!-- Modal Escuela -->
+<div class="modal-overlay" id="modal-escuela">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">NUEVA ESCUELA</div>
+      <span class="modal-close" onclick="closeModal('modal-escuela')">✕</span>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Nombre de la Escuela</label><input type="text" id="esc-nombre" placeholder="Ej: Escuela de Fútbol Élite" /></div>
+      <div class="form-group"><label>Deporte Principal</label>
+        <select id="esc-deporte"><option>Fútbol</option><option>Natación</option><option>Atletismo</option><option>Baloncesto</option><option>Gimnasia</option></select>
+      </div>
+      <div class="form-group"><label>Director</label><input type="text" id="esc-director" placeholder="Nombre del director" /></div>
+      <div class="form-group"><label>Capacidad Máxima</label><input type="number" id="esc-capacidad" placeholder="30" /></div>
+      <div class="form-group full"><label>Descripción</label><textarea id="esc-desc" placeholder="Descripción de la escuela..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-escuela')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEscuela()">Guardar Escuela</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Atleta -->
+<div class="modal-overlay" id="modal-atleta">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">NUEVO ATLETA</div>
+      <span class="modal-close" onclick="closeModal('modal-atleta')">✕</span>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Nombres</label><input type="text" id="atl-nombre" placeholder="Nombres" /></div>
+      <div class="form-group"><label>Apellidos</label><input type="text" id="atl-apellido" placeholder="Apellidos" /></div>
+      <div class="form-group"><label>Fecha de Nacimiento</label><input type="date" id="atl-fecha" /></div>
+      <div class="form-group"><label>Deporte</label>
+        <select id="atl-deporte"><option>Fútbol</option><option>Natación</option><option>Atletismo</option><option>Baloncesto</option><option>Gimnasia</option></select>
+      </div>
+      <div class="form-group"><label>Escuela</label>
+        <select id="atl-escuela"></select>
+      </div>
+      <div class="form-group"><label>Nivel</label>
+        <select id="atl-nivel"><option>Principiante</option><option>Intermedio</option><option>Avanzado</option><option>Élite</option></select>
+      </div>
+      <div class="form-group"><label>Email (Tutor)</label><input type="email" id="atl-email" placeholder="email@ejemplo.com" /></div>
+      <div class="form-group"><label>Teléfono</label><input type="tel" id="atl-tel" placeholder="0999-999-999" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-atleta')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarAtleta()">Registrar Atleta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Entrenador -->
+<div class="modal-overlay" id="modal-entrenador">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">NUEVO ENTRENADOR</div>
+      <span class="modal-close" onclick="closeModal('modal-entrenador')">✕</span>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Nombre Completo</label><input type="text" id="ent-nombre" placeholder="Nombre completo" /></div>
+      <div class="form-group"><label>Especialidad</label>
+        <select id="ent-esp"><option>Fútbol</option><option>Natación</option><option>Atletismo</option><option>Baloncesto</option><option>Gimnasia</option></select>
+      </div>
+      <div class="form-group"><label>Escuela Asignada</label><select id="ent-escuela"></select></div>
+      <div class="form-group"><label>Certificación</label>
+        <select id="ent-cert"><option>Nivel A</option><option>Nivel B</option><option>Nivel C</option><option>FIFA Pro</option><option>FINA</option></select>
+      </div>
+      <div class="form-group"><label>Email</label><input type="email" id="ent-email" placeholder="email@ejemplo.com" /></div>
+      <div class="form-group"><label>Salario Mensual ($)</label><input type="number" id="ent-salario" placeholder="800" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-entrenador')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEntrenador()">Registrar Entrenador</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Horario -->
+<div class="modal-overlay" id="modal-horario">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">NUEVA CLASE</div>
+      <span class="modal-close" onclick="closeModal('modal-horario')">✕</span>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Nombre de la Clase</label><input type="text" id="hor-nombre" placeholder="Ej: Técnica de Natación" /></div>
+      <div class="form-group"><label>Deporte</label>
+        <select id="hor-deporte"><option>Fútbol</option><option>Natación</option><option>Atletismo</option><option>Baloncesto</option><option>Gimnasia</option></select>
+      </div>
+      <div class="form-group"><label>Día</label>
+        <select id="hor-dia"><option>Lun</option><option>Mar</option><option>Mié</option><option>Jue</option><option>Vie</option><option>Sáb</option><option>Dom</option></select>
+      </div>
+      <div class="form-group"><label>Hora</label><input type="time" id="hor-hora" value="08:00" /></div>
+      <div class="form-group"><label>Entrenador</label><select id="hor-entrenador"></select></div>
+      <div class="form-group"><label>Cancha / Lugar</label><input type="text" id="hor-lugar" placeholder="Ej: Cancha A1" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-horario')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarHorario()">Guardar Clase</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- ==================== JAVASCRIPT ES6+ ==================== -->
+<script>
+'use strict';
+
+/* ========= STATE ========= */
+let state = {
+  escuelas: [
+    { id:1, nombre:'Escuela Élite Fútbol', deporte:'Fútbol', director:'Carlos Mendoza', atletas:8, capacidad:20, estado:'Activa' },
+    { id:2, nombre:'Escuela Natación Pro', deporte:'Natación', director:'Ana Quispe', atletas:5, capacidad:16, estado:'Activa' },
+    { id:3, nombre:'Escuela Atletismo RUN', deporte:'Atletismo', director:'Luis Torres', atletas:6, capacidad:25, estado:'Activa' },
+    { id:4, nombre:'Escuela Basket Stars', deporte:'Baloncesto', director:'María Pérez', atletas:3, capacidad:12, estado:'Inactiva' },
+    { id:5, nombre:'Escuela Gimnasia Art', deporte:'Gimnasia', director:'Sofía Ramos', atletas:2, capacidad:15, estado:'Activa' },
+  ],
+  atletas: [
+    { id:1, nombre:'Diego Sánchez',   edad:16, deporte:'Fútbol',     escuela:'Escuela Élite Fútbol', asistencia:92, estado:'Activo',   nivel:'Avanzado' },
+    { id:2, nombre:'Valeria López',   edad:14, deporte:'Natación',   escuela:'Escuela Natación Pro', asistencia:88, estado:'Activo',   nivel:'Intermedio' },
+    { id:3, nombre:'Sebastián Cruz',  edad:17, deporte:'Atletismo',  escuela:'Escuela Atletismo RUN', asistencia:95, estado:'Activo', nivel:'Élite' },
+    { id:4, nombre:'Isabella Mora',   edad:13, deporte:'Gimnasia',   escuela:'Escuela Gimnasia Art', asistencia:78, estado:'Activo',   nivel:'Principiante' },
+    { id:5, nombre:'Andrés Vargas',   edad:15, deporte:'Baloncesto', escuela:'Escuela Basket Stars', asistencia:82, estado:'Inactivo', nivel:'Intermedio' },
+    { id:6, nombre:'Camila Reyes',    edad:16, deporte:'Fútbol',     escuela:'Escuela Élite Fútbol', asistencia:90, estado:'Activo',   nivel:'Avanzado' },
+    { id:7, nombre:'Mateo Jiménez',   edad:14, deporte:'Natación',   escuela:'Escuela Natación Pro', asistencia:85, estado:'Activo',   nivel:'Avanzado' },
+    { id:8, nombre:'Luciana Flores',  edad:15, deporte:'Atletismo',  escuela:'Escuela Atletismo RUN', asistencia:91, estado:'Activo', nivel:'Intermedio' },
+  ],
+  entrenadores: [
+    { id:1, nombre:'Prof. Carlos Mendoza', especialidad:'Fútbol',     escuela:'Escuela Élite Fútbol', cert:'FIFA Pro',  atletas:8,  estado:'Activo' },
+    { id:2, nombre:'Prof. Ana Quispe',     especialidad:'Natación',   escuela:'Escuela Natación Pro', cert:'FINA',      atletas:5,  estado:'Activo' },
+    { id:3, nombre:'Prof. Luis Torres',    especialidad:'Atletismo',  escuela:'Escuela Atletismo RUN', cert:'Nivel A',  atletas:6,  estado:'Activo' },
+    { id:4, nombre:'Prof. María Pérez',    especialidad:'Baloncesto', escuela:'Escuela Basket Stars', cert:'Nivel B',   atletas:3,  estado:'Activo' },
+    { id:5, nombre:'Prof. Sofía Ramos',    especialidad:'Gimnasia',   escuela:'Escuela Gimnasia Art', cert:'Nivel A',   atletas:2,  estado:'Activo' },
+  ],
+  horarios: [
+    { nombre:'Técnica de Fútbol',    deporte:'Fútbol',     dia:'Lun', hora:'08:00', entrenador:'Prof. Carlos Mendoza', lugar:'Cancha A1' },
+    { nombre:'Natación Libre',        deporte:'Natación',   dia:'Lun', hora:'10:00', entrenador:'Prof. Ana Quispe',     lugar:'Piscina C' },
+    { nombre:'Velocidad',             deporte:'Atletismo',  dia:'Mar', hora:'07:00', entrenador:'Prof. Luis Torres',    lugar:'Pista D' },
+    { nombre:'Táctica Basket',        deporte:'Baloncesto', dia:'Mar', hora:'09:00', entrenador:'Prof. María Pérez',    lugar:'Cancha B2' },
+    { nombre:'Acrobacia',             deporte:'Gimnasia',   dia:'Mié', hora:'08:00', entrenador:'Prof. Sofía Ramos',    lugar:'Gimnasio E' },
+    { nombre:'Partido Práctica',      deporte:'Fútbol',     dia:'Jue', hora:'08:00', entrenador:'Prof. Carlos Mendoza', lugar:'Cancha A1' },
+    { nombre:'Resistencia Acuática',  deporte:'Natación',   dia:'Vie', hora:'10:00', entrenador:'Prof. Ana Quispe',     lugar:'Piscina C' },
+    { nombre:'Cross Training',        deporte:'Atletismo',  dia:'Sáb', hora:'07:00', entrenador:'Prof. Luis Torres',    lugar:'Pista D' },
+  ],
+  notificaciones: [
+    { tipo:'warning', msg:'La piscina C está en mantenimiento hasta el 20 de mayo.',  time:'Hace 30 min',  leida:false },
+    { tipo:'info',    msg:'Nuevo atleta registrado: Camila Reyes en Escuela Élite Fútbol.', time:'Hace 2 horas', leida:false },
+    { tipo:'danger',  msg:'Andrés Vargas marcado como inactivo por baja asistencia.', time:'Hace 1 día',   leida:false },
+    { tipo:'success', msg:'Reporte mensual de abril generado correctamente.',          time:'Hace 2 días',  leida:true },
+    { tipo:'info',    msg:'Actualización del sistema completada v1.0.',               time:'Hace 3 días',  leida:true },
+  ],
+  paises: [],
+};
+
+const sportColors = { Fútbol:'#0d6efd', Natación:'#0d9488', Atletismo:'#ff5722', Baloncesto:'#8b5cf6', Gimnasia:'#ec4899' };
+const avatarColors = ['#0d6efd','#ff5722','#1a9e6e','#8b5cf6','#ec4899','#e09300','#0d9488'];
+let paisesAll = [];
+
+/* ========= NAVIGATION ========= */
+function navigate(sec) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`sec-${sec}`)?.classList.add('active');
+  const titles = { dashboard:'DASHBOARD', clima:'CLIMA & CANCHAS', escuelas:'ESCUELAS', atletas:'ATLETAS', entrenadores:'ENTRENADORES', horarios:'HORARIOS', paises:'DATOS DE PAÍSES', reportes:'REPORTES', notificaciones:'NOTIFICACIONES' };
+  document.getElementById('header-title').textContent = titles[sec] || sec.toUpperCase();
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.trim().toLowerCase().startsWith(titles[sec]?.slice(0,5).toLowerCase() ?? '')) n.classList.add('active');
+  });
+  // lazy loads
+  if (sec === 'clima') loadClima();
+  if (sec === 'paises') loadPaises();
+  if (sec === 'reportes') renderReportes();
+  renderAll();
+  closeSidebar();
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function closeSidebar()   { document.getElementById('sidebar').classList.remove('open'); }
+
+/* ========= RENDER ========= */
+function renderAll() {
+  renderEscuelas(); renderAtletas(); renderEntrenadores();
+  renderHorarios(); renderDashboard(); renderNotif();
+  updateSelects();
+}
+
+function avatarColor(i) { return avatarColors[i % avatarColors.length]; }
+function initials(n) { return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+function renderEscuelas() {
+  const tb = document.getElementById('escuelas-table');
+  if (!tb) return;
+  tb.innerHTML = state.escuelas.map((e,i) => `
+    <tr>
+      <td><div class="cell-athlete"><div class="ath-avatar" style="background:${avatarColor(i)}">${initials(e.nombre)}</div><strong>${e.nombre}</strong></div></td>
+      <td>${e.deporte}</td><td>${e.director}</td><td>${e.atletas}</td>
+      <td><div class="progress" style="width:100px"><div class="progress-fill" style="width:${Math.round(e.atletas/e.capacidad*100)}%"></div></div><span style="font-size:12px;color:var(--muted)">${e.atletas}/${e.capacidad}</span></td>
+      <td><span class="badge ${e.estado==='Activa'?'badge-success':'badge-warning'}">${e.estado}</span></td>
+      <td><div class="actions"><button class="btn btn-outline btn-sm" onclick="editEscuela(${e.id})">✏️</button><button class="btn btn-sm btn-danger" onclick="eliminarEscuela(${e.id})">🗑</button></div></td>
+    </tr>`).join('');
+  document.getElementById('kpi-escuelas').textContent = state.escuelas.filter(e=>e.estado==='Activa').length;
+}
+
+function renderAtletas(filtro='') {
+  const tb = document.getElementById('atletas-table');
+  if (!tb) return;
+  const lista = filtro ? state.atletas.filter(a=>a.deporte===filtro) : state.atletas;
+  tb.innerHTML = lista.map((a,i) => `
+    <tr>
+      <td><div class="cell-athlete"><div class="ath-avatar" style="background:${avatarColor(i)}">${initials(a.nombre)}</div><strong>${a.nombre}</strong></div></td>
+      <td>${a.edad} años</td>
+      <td><span class="badge badge-info" style="background:${sportColors[a.deporte]}22;color:${sportColors[a.deporte]}">${a.deporte}</span></td>
+      <td>${a.escuela}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="progress" style="width:70px"><div class="progress-fill" style="width:${a.asistencia}%;background:${a.asistencia>90?'var(--success)':a.asistencia>75?'var(--warning)':'var(--danger)'}"></div></div>
+          <span style="font-size:12px;font-weight:600">${a.asistencia}%</span>
+        </div>
+      </td>
+      <td><span class="badge ${a.estado==='Activo'?'badge-success':'badge-danger'}">${a.estado}</span></td>
+      <td><div class="actions"><button class="btn btn-outline btn-sm" onclick="toast('Editar próximamente','info')">✏️</button><button class="btn btn-sm btn-danger" onclick="eliminarAtleta(${a.id})">🗑</button></div></td>
+    </tr>`).join('');
+  document.getElementById('kpi-atletas').textContent = state.atletas.filter(a=>a.estado==='Activo').length;
+  document.getElementById('badge-atletas').textContent = state.atletas.length;
+}
+
+function renderEntrenadores() {
+  const tb = document.getElementById('entrenadores-table');
+  if (!tb) return;
+  tb.innerHTML = state.entrenadores.map((e,i) => `
+    <tr>
+      <td><div class="cell-athlete"><div class="ath-avatar" style="background:${avatarColor(i+2)}">${initials(e.nombre)}</div><strong>${e.nombre}</strong></div></td>
+      <td>${e.especialidad}</td><td>${e.escuela}</td>
+      <td><span class="badge badge-purple">${e.cert}</span></td>
+      <td>${e.atletas}</td>
+      <td><span class="badge ${e.estado==='Activo'?'badge-success':'badge-danger'}">${e.estado}</span></td>
+      <td><div class="actions"><button class="btn btn-outline btn-sm" onclick="toast('Editar próximamente','info')">✏️</button><button class="btn btn-sm btn-danger" onclick="eliminarEntrenador(${e.id})">🗑</button></div></td>
+    </tr>`).join('');
+  document.getElementById('kpi-entrenadores').textContent = state.entrenadores.filter(e=>e.estado==='Activo').length;
+}
+
+const dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+function renderHorarios() {
+  const sg = document.getElementById('schedule-grid');
+  if (!sg) return;
+  sg.innerHTML = dias.map(d => `
+    <div class="day-col">
+      <div class="day-header">${d}</div>
+      <div class="day-body">
+        ${state.horarios.filter(h=>h.dia===d).map(h=>`
+          <div class="sched-item" style="--item-color:${sportColors[h.deporte]??'var(--brand)'}">
+            <strong>${h.hora}</strong>${h.nombre}<br><span style="font-size:10px;color:var(--muted)">${h.lugar}</span>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function renderDashboard() {
+  const bc = document.getElementById('bar-chart-sports');
+  if (!bc) return;
+  const sportCount = {};
+  state.atletas.forEach(a => { sportCount[a.deporte] = (sportCount[a.deporte]||0)+1; });
+  const max = Math.max(...Object.values(sportCount));
+  bc.innerHTML = Object.entries(sportCount).map(([s,c])=>`
+    <div class="bar-row">
+      <div class="bar-label">${s}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/max*100)}%;background:${sportColors[s]}"></div></div>
+      <div class="bar-val">${c}</div>
+    </div>`).join('');
+
+  const actList = document.getElementById('actividad-list');
+  if (actList) {
+    const items = [
+      '🏃 Diego Sánchez asistió a Técnica de Fútbol',
+      '🆕 Nueva atleta: Luciana Flores registrada',
+      '📅 Clase de Cross Training programada para sábado',
+      '⚠️ Piscina C en mantenimiento',
+      '✅ Reporte de abril generado',
+    ];
+    actList.innerHTML = items.map(i=>`<div style="padding:9px 0;border-bottom:1px solid var(--surface2);font-size:13px">${i}</div>`).join('');
+  }
+
+  const dat = document.getElementById('dash-atletas-table');
+  if (dat) {
+    dat.innerHTML = state.atletas.slice(0,5).map((a,i)=>`
+      <tr>
+        <td><div class="cell-athlete"><div class="ath-avatar" style="background:${avatarColor(i)}">${initials(a.nombre)}</div>${a.nombre}</div></td>
+        <td>${a.escuela}</td><td>${a.deporte}</td>
+        <td>${a.asistencia}%</td>
+        <td><span class="badge ${a.estado==='Activo'?'badge-success':'badge-danger'}">${a.estado}</span></td>
+      </tr>`).join('');
+  }
+}
+
+function renderNotif() {
+  const nl = document.getElementById('notif-list');
+  if (!nl) return;
+  const cls = {warning:'badge-warning',info:'badge-info',danger:'badge-danger',success:'badge-success'};
+  nl.innerHTML = state.notificaciones.map((n,i)=>`
+    <div class="notif-item" style="--notif-color:${n.tipo==='success'?'var(--success)':n.tipo==='danger'?'var(--danger)':n.tipo==='warning'?'var(--warning)':'var(--brand)'}; opacity:${n.leida?.6:1}">
+      <div style="flex:1">
+        <div class="notif-body">${n.msg}</div>
+        <div class="notif-time">${n.time}${n.leida?' · Leída':' · <strong>Nueva</strong>'}</div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="leerNotif(${i})">${n.leida?'✓':'Leer'}</button>
+    </div>`).join('');
+}
+
+function renderReportes() {
+  const rm = document.getElementById('rep-mensual');
+  if (rm) {
+    const meses = [['Ene',18],['Feb',20],['Mar',22],['Abr',24],['May',24]];
+    const max = Math.max(...meses.map(m=>m[1]));
+    rm.innerHTML = meses.map(([m,v])=>`<div class="bar-row"><div class="bar-label">${m}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/max*100)}%"></div></div><div class="bar-val">${v}</div></div>`).join('');
+  }
+  const ra = document.getElementById('rep-asistencia');
+  if (ra) {
+    const data = Object.entries(sportColors).map(([s])=>({ s, v: Math.round(78+Math.random()*18) }));
+    const max = 100;
+    ra.innerHTML = data.map(d=>`<div class="bar-row"><div class="bar-label">${d.s}</div><div class="bar-track"><div class="bar-fill" style="width:${d.v}%;background:${sportColors[d.s]}"></div></div><div class="bar-val">${d.v}%</div></div>`).join('');
+  }
+}
+
+/* ========= CLIMA (API OpenMeteo) ========= */
+async function loadClima() {
+  const wc = document.getElementById('weather-card');
+  if (!wc || wc.dataset.loaded) return;
+  wc.dataset.loaded = '1';
+  try {
+    // Quevedo, Los Ríos, Ecuador (-1.0228, -79.4609)
+    const lat = -1.0228, lon = -79.4609;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weathercode,precipitation&timezone=auto`;
+    const res = await fetch(url);
+    const d = await res.json();
+    const c = d.current;
+    const icons = { 0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️', 45:'🌫️', 61:'🌧️', 71:'❄️', 80:'🌦️', 95:'⛈️' };
+    const descs = { 0:'Despejado', 1:'Mayormente despejado', 2:'Parcialmente nublado', 3:'Nublado', 45:'Niebla', 61:'Lluvia', 71:'Nieve', 80:'Chubascos', 95:'Tormenta' };
+    const code = c.weathercode;
+    const icon = icons[code] ?? '🌤️';
+    const desc = descs[code] ?? 'Variable';
+    const temp = Math.round(c.temperature_2m);
+    const hum  = c.relative_humidity_2m;
+    const wind = Math.round(c.wind_speed_10m);
+    const rain = c.precipitation;
+    wc.innerHTML = `
+      <div class="weather-main">
+        <div class="weather-icon">${icon}</div>
+        <div>
+          <div class="weather-temp">${temp}°C</div>
+          <div class="weather-desc">${desc}</div>
+          <div class="weather-meta">📍 Quevedo, Los Ríos, Ecuador</div>
+        </div>
+      </div>
+      <div class="weather-details">
+        <div class="w-detail"><div class="w-detail-val">${hum}%</div><div class="w-detail-lbl">Humedad</div></div>
+        <div class="w-detail"><div class="w-detail-val">${wind} km/h</div><div class="w-detail-lbl">Viento</div></div>
+        <div class="w-detail"><div class="w-detail-val">${rain} mm</div><div class="w-detail-lbl">Precipit.</div></div>
+      </div>`;
+    renderCondiciones(temp, code, wind, rain);
+  } catch (e) {
+    wc.innerHTML = `<div style="color:#fff;padding:20px">⚠️ No se pudo cargar el clima. Revisa tu conexión.</div>`;
+  }
+}
+
+function renderCondiciones(temp, code, wind, rain) {
+  const cl = document.getElementById('condicion-list');
+  if (!cl) return;
+  const deportes = [
+    { d:'Fútbol (Cancha A1)', ok: code < 61 && wind < 40, msg: code >= 61 ? 'Lluvia detectada – evaluar' : wind >= 40 ? 'Viento fuerte' : 'Condiciones óptimas ✅' },
+    { d:'Natación (Piscina C)', ok: true, msg: 'Interior – siempre disponible ✅' },
+    { d:'Atletismo (Pista D)', ok: code < 45 && rain < 1, msg: code >= 45 ? 'Niebla o lluvia – precaución' : 'Pista seca ✅' },
+    { d:'Baloncesto (Cancha B2)', ok: code < 61, msg: code >= 61 ? 'Lluvia ligera – cubierta recomendada' : 'Condiciones normales ✅' },
+    { d:'Gimnasia (Gimnasio E)', ok: true, msg: 'Interior – sin restricciones ✅' },
+  ];
+  cl.innerHTML = deportes.map(d=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--surface2)">
+      <span style="font-size:14px;font-weight:500">${d.d}</span>
+      <span class="badge ${d.ok?'badge-success':'badge-warning'}">${d.msg}</span>
+    </div>`).join('');
+}
+
+/* ========= API REST COUNTRIES ========= */
+async function loadPaises() {
+  if (paisesAll.length > 0) return;
+  const grid = document.getElementById('paises-grid');
+  const loading = document.getElementById('paises-loading');
+  try {
+    const res = await fetch('https://restcountries.com/v3.1/all?fields=name,flags,capital,population,region,languages,area,sports');
+    const data = await res.json();
+    paisesAll = data.sort((a,b)=>a.name.common.localeCompare(b.name.common));
+    document.getElementById('pais-count').textContent = `${paisesAll.length} países cargados`;
+    loading.style.display = 'none';
+    grid.style.display = 'grid';
+    renderPaises(paisesAll.slice(0,12));
+  } catch(e) {
+    loading.innerHTML = `<p style="color:var(--danger)">⚠️ Error al cargar países. Verifica tu conexión a internet.</p>`;
+  }
+}
+
+function renderPaises(lista) {
+  const grid = document.getElementById('paises-grid');
+  if (!grid) return;
+  grid.innerHTML = lista.slice(0,12).map(p => {
+    const langs = p.languages ? Object.values(p.languages).slice(0,2).join(', ') : 'N/A';
+    const cap   = p.capital?.[0] ?? 'N/A';
+    const pop   = p.population ? (p.population >= 1e6 ? (p.population/1e6).toFixed(1)+'M' : p.population.toLocaleString()) : 'N/A';
+    return `
+      <div class="fact-card">
+        <div style="display:flex;align-items:center;gap:10px">
+          <img src="${p.flags?.png}" alt="${p.name.common}" style="width:40px;height:26px;object-fit:cover;border-radius:3px;border:1px solid var(--border)" />
+          <div class="fact-sport">${p.name.common}</div>
+        </div>
+        <div class="fact-text">🏛️ Capital: <strong>${cap}</strong><br>🌍 Región: ${p.region}<br>👥 Población: ${pop}<br>🗣️ Idiomas: ${langs}</div>
+        <div class="fact-source">REST Countries API · restcountries.com</div>
+      </div>`;
+  }).join('');
+}
+
+function buscarPais(val) {
+  if (!paisesAll.length) return;
+  const q = val.toLowerCase().trim();
+  const filtrados = q ? paisesAll.filter(p=>p.name.common.toLowerCase().includes(q) || (p.region||'').toLowerCase().includes(q)) : paisesAll;
+  document.getElementById('pais-count').textContent = `${filtrados.length} resultado(s)`;
+  renderPaises(filtrados.slice(0,12));
+}
+
+/* ========= MODALES ========= */
+function openModal(id) {
+  updateSelects();
+  document.getElementById(id)?.classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id)?.classList.remove('open');
+}
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id);
+});
+
+/* ========= SELECTS ========= */
+function updateSelects() {
+  const escNames = state.escuelas.map(e=>e.nombre);
+  const entNames = state.entrenadores.map(e=>e.nombre);
+  const fills = [
+    ['atl-escuela', escNames],
+    ['ent-escuela', escNames],
+    ['hor-entrenador', entNames],
+  ];
+  fills.forEach(([id, opts]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = opts.map(o=>`<option>${o}</option>`).join('');
+  });
+}
+
+/* ========= GUARDAR ========= */
+function guardarEscuela() {
+  const n = document.getElementById('esc-nombre').value.trim();
+  if (!n) { toast('Ingresa el nombre de la escuela','error'); return; }
+  const nueva = {
+    id: Date.now(), nombre:n,
+    deporte:document.getElementById('esc-deporte').value,
+    director:document.getElementById('esc-director').value||'Sin asignar',
+    atletas:0,
+    capacidad:parseInt(document.getElementById('esc-capacidad').value)||20,
+    estado:'Activa'
+  };
+  state.escuelas.push(nueva);
+  closeModal('modal-escuela');
+  renderAll();
+  toast(`Escuela "${n}" registrada`,'success');
+}
+
+function guardarAtleta() {
+  const n = document.getElementById('atl-nombre').value.trim();
+  const ap= document.getElementById('atl-apellido').value.trim();
+  if (!n||!ap) { toast('Ingresa nombre y apellido','error'); return; }
+  const fecha = document.getElementById('atl-fecha').value;
+  const edad = fecha ? Math.floor((new Date()-new Date(fecha))/31557600000) : 16;
+  const nuevo = {
+    id:Date.now(), nombre:`${n} ${ap}`, edad,
+    deporte:document.getElementById('atl-deporte').value,
+    escuela:document.getElementById('atl-escuela').value,
+    asistencia:100, estado:'Activo',
+    nivel:document.getElementById('atl-nivel').value
+  };
+  state.atletas.push(nuevo);
+  closeModal('modal-atleta');
+  renderAll();
+  toast(`Atleta "${n} ${ap}" registrado`,'success');
+}
+
+function guardarEntrenador() {
+  const n = document.getElementById('ent-nombre').value.trim();
+  if (!n) { toast('Ingresa el nombre del entrenador','error'); return; }
+  const nuevo = {
+    id:Date.now(), nombre:n,
+    especialidad:document.getElementById('ent-esp').value,
+    escuela:document.getElementById('ent-escuela').value,
+    cert:document.getElementById('ent-cert').value,
+    atletas:0, estado:'Activo'
+  };
+  state.entrenadores.push(nuevo);
+  closeModal('modal-entrenador');
+  renderAll();
+  toast(`Entrenador "${n}" registrado`,'success');
+}
+
+function guardarHorario() {
+  const n = document.getElementById('hor-nombre').value.trim();
+  if (!n) { toast('Ingresa el nombre de la clase','error'); return; }
+  const nuevo = {
+    nombre:n,
+    deporte:document.getElementById('hor-deporte').value,
+    dia:document.getElementById('hor-dia').value,
+    hora:document.getElementById('hor-hora').value,
+    entrenador:document.getElementById('hor-entrenador').value,
+    lugar:document.getElementById('hor-lugar').value||'Por asignar'
+  };
+  state.horarios.push(nuevo);
+  closeModal('modal-horario');
+  renderAll();
+  toast(`Clase "${n}" añadida al horario`,'success');
+}
+
+/* ========= ELIMINAR ========= */
+function eliminarEscuela(id) { if(confirm('¿Eliminar esta escuela?')) { state.escuelas=state.escuelas.filter(e=>e.id!==id); renderAll(); toast('Escuela eliminada','info'); } }
+function eliminarAtleta(id)  { if(confirm('¿Eliminar este atleta?'))  { state.atletas=state.atletas.filter(a=>a.id!==id); renderAll(); toast('Atleta eliminado','info'); } }
+function eliminarEntrenador(id) { if(confirm('¿Eliminar este entrenador?')) { state.entrenadores=state.entrenadores.filter(e=>e.id!==id); renderAll(); toast('Entrenador eliminado','info'); } }
+function editEscuela(id) { toast('Función de edición próximamente','info'); }
+
+/* ========= FILTROS ========= */
+function filtrarAtletas() {
+  const val = document.getElementById('filtro-deporte')?.value || '';
+  renderAtletas(val);
+}
+
+/* ========= BÚSQUEDA GLOBAL ========= */
+function globalSearch(val) {
+  const q = val.toLowerCase();
+  if (!q) return;
+  const found = [
+    ...state.atletas.filter(a=>a.nombre.toLowerCase().includes(q)).map(a=>`Atleta: ${a.nombre}`),
+    ...state.escuelas.filter(e=>e.nombre.toLowerCase().includes(q)).map(e=>`Escuela: ${e.nombre}`),
+    ...state.entrenadores.filter(e=>e.nombre.toLowerCase().includes(q)).map(e=>`Entrenador: ${e.nombre}`),
+  ];
+  if (found.length) toast(found.slice(0,3).join(' | '),'info');
+}
+
+/* ========= NOTIFICACIONES ========= */
+function leerNotif(i) { state.notificaciones[i].leida = true; renderNotif(); }
+function marcarLeidas() { state.notificaciones.forEach(n=>n.leida=true); renderNotif(); toast('Todas las notificaciones marcadas como leídas','success'); }
+
+/* ========= TOAST ========= */
+function toast(msg, type='info') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  const emojis = {success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${emojis[type]??'ℹ️'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(), 3500);
+}
+
+/* ========= INIT ========= */
+renderAll();
+</script>
+</body>
+</html>
