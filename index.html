@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SportEdu – Gestión de Escuelas Deportivas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">SE</div>
+    <div>
+      <div class="logo-text">SportEdu</div>
+      <div class="logo-sub">Gestión Deportiva</div>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" onclick="navigate('dashboard')">
+      <span class="ni">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="navigate('clima')">
+      <span class="ni">🌤️</span> Clima & Canchas
+    </div>
+
+    <div class="nav-section">Gestión</div>
+    <div class="nav-item" onclick="navigate('escuelas')">
+      <span class="ni">🏫</span> Escuelas
+    </div>
+    <div class="nav-item" onclick="navigate('atletas')">
+      <span class="ni">🏃</span> Atletas <span class="nav-badge" id="badge-atletas">24</span>
+    </div>
+    <div class="nav-item" onclick="navigate('entrenadores')">
+      <span class="ni">🎽</span> Entrenadores
+    </div>
+    <div class="nav-item" onclick="navigate('horarios')">
+      <span class="ni">📅</span> Horarios
+    </div>
+
+    <div class="nav-section">Datos</div>
+    <div class="nav-item" onclick="navigate('paises')">
+      <span class="ni">🌎</span> Datos de Países
+    </div>
+    <div class="nav-item" onclick="navigate('reportes')">
+      <span class="ni">📈</span> Reportes
+    </div>
+    <div class="nav-item" onclick="navigate('notificaciones')">
+      <span class="ni">🔔</span> Notificaciones <span class="nav-badge">3</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">v1.0.0 · SportEdu © 2025</div>
+</aside>
+
+<!-- ==================== MAIN ==================== -->
+<div id="main">
+  <header>
+    <button class="header-btn hamburger" onclick="toggleSidebar()" title="Menú">☰</button>
+    <span class="page-title" id="header-title">DASHBOARD</span>
+    <div class="header-spacer"></div>
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" placeholder="Buscar..." id="global-search" onkeyup="globalSearch(this.value)" />
+    </div>
+    <button class="header-btn" onclick="navigate('notificaciones')" title="Notificaciones">🔔</button>
+    <div class="avatar" title="Admin">AD</div>
+  </header>
+
+  <main id="content">
+
+    <!-- ===================== DASHBOARD ===================== -->
+    <section id="sec-dashboard" class="section active">
+      <div class="page-hero">
+        <div>
+          <h1>BIENVENIDO</h1>
+          <p>Sistema de Gestión de Escuelas Deportivas — Panel Principal</p>
+        </div>
+        <div class="hero-icon">🏆</div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card" style="--kpi-color:#d9e8ff">
+          <div class="kpi-icon">🏫</div>
+          <div class="kpi-val" id="kpi-escuelas">5</div>
+          <div class="kpi-lbl">Escuelas Activas</div>
+          <div class="kpi-trend up">↑ +1 este mes</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:#dcf5eb">
+          <div class="kpi-icon">🏃</div>
+          <div class="kpi-val" id="kpi-atletas">24</div>
+          <div class="kpi-lbl">Atletas Inscritos</div>
+          <div class="kpi-trend up">↑ +3 esta semana</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:#fff4d9">
+          <div class="kpi-icon">🎽</div>
+          <div class="kpi-val" id="kpi-entrenadores">8</div>
+          <div class="kpi-lbl">Entrenadores</div>
+          <div class="kpi-trend up">↑ +1</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:#ffe8e8">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-val">$4.8k</div>
+          <div class="kpi-lbl">Ingresos Mensuales</div>
+          <div class="kpi-trend down">↓ -2% vs mes ant.</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">INSCRIPCIONES POR DEPORTE</div>
+          </div>
+          <div class="bar-chart" id="bar-chart-sports"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">ACTIVIDAD RECIENTE</div>
+          </div>
+          <div id="actividad-list"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">ATLETAS DESTACADOS</div>
+          <button class="btn btn-outline btn-sm" onclick="navigate('atletas')">Ver todos</button>
+        </div>
+        <table>
+          <thead><tr><th>Atleta</th><th>Escuela</th><th>Deporte</th><th>Asistencia</th><th>Estado</th></tr></thead>
+          <tbody id="dash-atletas-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== CLIMA ===================== -->
+    <section id="sec-clima" class="section">
+      <div class="page-hero">
+        <div><h1>CLIMA & CANCHAS</h1><p>Condiciones climáticas para la práctica deportiva</p></div>
+        <div class="hero-icon">🌤️</div>
+      </div>
+      <div class="two-col">
+        <div>
+          <div class="weather-card" id="weather-card">
+            <div class="loading"><div class="spinner"></div>Cargando clima...</div>
+          </div>
+          <div class="card" style="margin-top:20px">
+            <div class="card-header"><div class="card-title">ESTADO DE CANCHAS</div></div>
+            <table>
+              <thead><tr><th>Cancha</th><th>Deporte</th><th>Capacidad</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>Cancha A1</td><td>Fútbol</td><td>22</td><td><span class="badge badge-success">Disponible</span></td></tr>
+                <tr><td>Cancha B2</td><td>Baloncesto</td><td>10</td><td><span class="badge badge-success">Disponible</span></td></tr>
+                <tr><td>Piscina C</td><td>Natación</td><td>16</td><td><span class="badge badge-warning">Mantenimiento</span></td></tr>
+                <tr><td>Pista D</td><td>Atletismo</td><td>30</td><td><span class="badge badge-success">Disponible</span></td></tr>
+                <tr><td>Gimnasio E</td><td>Gimnasia</td><td>20</td><td><span class="badge badge-danger">Ocupada</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">CONDICIÓN PARA ENTRENAMIENTO</div></div>
+          <p class="text-muted" style="margin-bottom:16px">Basado en las condiciones actuales del clima:</p>
+          <div id="condicion-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ESCUELAS ===================== -->
+    <section id="sec-escuelas" class="section">
+      <div class="page-hero">
+        <div><h1>ESCUELAS DEPORTIVAS</h1><p>Gestión de centros de entrenamiento</p></div>
+        <div class="hero-icon">🏫</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">LISTA DE ESCUELAS</div>
+          <button class="btn btn-primary" onclick="openModal('modal-escuela')">+ Nueva Escuela</button>
+        </div>
+        <table>
+          <thead><tr><th>Nombre</th><th>Deporte</th><th>Director</th><th>Atletas</th><th>Capacidad</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="escuelas-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== ATLETAS ===================== -->
+    <section id="sec-atletas" class="section">
+      <div class="page-hero">
+        <div><h1>ATLETAS</h1><p>Registro y seguimiento de deportistas</p></div>
+        <div class="hero-icon">🏃</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">REGISTRO DE ATLETAS</div>
+          <div style="display:flex;gap:10px">
+            <select id="filtro-deporte" onchange="filtrarAtletas()">
+              <option value="">Todos los deportes</option>
+              <option value="Fútbol">Fútbol</option>
+              <option value="Natación">Natación</option>
+              <option value="Atletismo">Atletismo</option>
+              <option value="Baloncesto">Baloncesto</option>
+              <option value="Gimnasia">Gimnasia</option>
+            </select>
+            <button class="btn btn-primary" onclick="openModal('modal-atleta')">+ Nuevo Atleta</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Atleta</th><th>Edad</th><th>Deporte</th><th>Escuela</th><th>Asistencia</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="atletas-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== ENTRENADORES ===================== -->
+    <section id="sec-entrenadores" class="section">
+      <div class="page-hero">
+        <div><h1>ENTRENADORES</h1><p>Equipo de profesores y técnicos</p></div>
+        <div class="hero-icon">🎽</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">EQUIPO TÉCNICO</div>
+          <button class="btn btn-primary" onclick="openModal('modal-entrenador')">+ Nuevo Entrenador</button>
+        </div>
+        <table>
+          <thead><tr><th>Entrenador</th><th>Especialidad</th><th>Escuela</th><th>Certificación</th><th>Atletas</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="entrenadores-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== HORARIOS ===================== -->
+    <section id="sec-horarios" class="section">
+      <div class="page-hero">
+        <div><h1>HORARIOS</h1><p>Planificación semanal de entrenamientos</p></div>
+        <div class="hero-icon">📅</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">SEMANA ACTUAL</div>
+          <button class="btn btn-primary" onclick="openModal('modal-horario')">+ Nueva Clase</button>
+        </div>
+        <div class="schedule-grid" id="schedule-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===================== PAÍSES (API REST COUNTRIES) ===================== -->
+    <section id="sec-paises" class="section">
+      <div class="page-hero">
+        <div><h1>DATOS DE PAÍSES</h1><p>Información de países vía REST Countries API pública</p></div>
+        <div class="hero-icon">🌎</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">BÚSQUEDA DE PAÍSES</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <input type="text" id="pais-search" placeholder="Buscar país..." style="width:220px" onkeyup="buscarPais(this.value)" />
+            <span class="text-muted" id="pais-count"></span>
+          </div>
+        </div>
+        <div class="loading" id="paises-loading"><div class="spinner"></div>Conectando con REST Countries API...</div>
+        <div class="api-grid" id="paises-grid" style="display:none"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px">ℹ️ FUENTE DE LA API</div>
+        <div style="font-size:13px;color:var(--muted);font-family:var(--font-mono)">
+          Endpoint: <strong>https://restcountries.com/v3.1/all</strong><br>
+          Datos obtenidos en tiempo real • Consumo ES6+ fetch() con async/await
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== REPORTES ===================== -->
+    <section id="sec-reportes" class="section">
+      <div class="page-hero">
+        <div><h1>REPORTES</h1><p>Estadísticas y análisis de rendimiento</p></div>
+        <div class="hero-icon">📈</div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">INSCRIPCIONES MENSUALES</div></div>
+          <div class="bar-chart" id="rep-mensual"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">ASISTENCIA PROMEDIO</div></div>
+          <div class="bar-chart" id="rep-asistencia"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">RESUMEN FINANCIERO</div></div>
+        <div class="kpi-grid">
+          <div class="kpi-card" style="--kpi-color:#dcf5eb"><div class="kpi-icon">💵</div><div class="kpi-val">$4,820</div><div class="kpi-lbl">Ingresos Mayo</div><div class="kpi-trend up">↑ +8%</div></div>
+          <div class="kpi-card" style="--kpi-color:#ffe8e8"><div class="kpi-icon">💸</div><div class="kpi-val">$2,150</div><div class="kpi-lbl">Gastos Mayo</div><div class="kpi-trend down">↓ -3%</div></div>
+          <div class="kpi-card" style="--kpi-color:#d9e8ff"><div class="kpi-icon">📊</div><div class="kpi-val">$2,670</div><div class="kpi-lbl">Utilidad Neta</div><div class="kpi-trend up">↑ +15%</div></div>
+          <div class="kpi-card" style="--kpi-color:#fff4d9"><div class="kpi-icon">🎯</div><div class="kpi-val">92%</div><div class="kpi-lbl">Meta Alcanzada</div><div class="kpi-trend up">↑ +7%</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== NOTIFICACIONES ===================== -->
+    <section id="sec-notificaciones" class="section">
+      <div class="page-hero">
+        <div><h1>NOTIFICACIONES</h1><p>Alertas y avisos del sistema</p></div>
+        <div class="hero-icon">🔔</div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">NOTIFICACIONES RECIENTES</div><button class="btn btn-outline btn-sm" onclick="marcarLeidas()">Marcar todas leídas</button></div>
+        <div class="notif-list" id="notif-list"></div>
+      </div>
+    </section>
+
+  </main><!-- /content -->
+
+  <footer>SportEdu v1.0 &nbsp;|&nbsp; Práctica Experimental Unidad I &nbsp;|&nbsp; HTML5 · CSS3 · JavaScript ES6+ · REST Countries API</footer>
+</div><!-- /main -->
+
+<!-- ==================== MODALES ==================== -->
+
+<!-- Modal Escuela -->
+<div class="modal-overlay" id="modal-escuela">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">NUEVA ESCUELA</div>
+      <span class="modal-close" onclick="closeModal('modal-escuela')">✕</span>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Nombre de la Escuela</label><input type="text" id="esc-nombre" placeholder="Ej: Escuela de Fútbol Élite" /></div>
+      <div class="form-group"><label>Deporte Principal</label>
+        <select id="esc-deporte"><option>Fútbol</option><option>Natación</option><option>Atletismo</option><option>Baloncesto</option><option>Gimnasia</option></select>
+      </div>
+      <div class="form-group"><label>Director</label><input type="text" id="esc-director" placeholder="Nombre del director" /></div>
+      <div class="form-group"><label>Capacidad Máxima</label><input type="number" id="esc-capacidad" placeholder="30" /></div>
+      <div class="form-group full"><label>Descripción</label><textarea id="esc-desc" placeholder="Descripción de la escuela..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-escuela')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEscuela()">Guardar Escuela</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Atleta -->
+<div class="modal-overlay" id="modal-atleta">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">NUEVO ATLETA</div>
+      <span class="modal-close" onclick="closeModal('modal-atleta')">✕</span>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Nombres</label><input type="text" id="atl-nombre" placeholder="Nombres" /></div>
+      <div class="form-group"><label>Apellidos</label><input type="text" id="atl-apellido" placeholder="Apellidos" /></div>
+      <div class="form-group"><label>Fecha de Nacimiento</label><input type="date" id="atl-fecha" /></div>
+      <div class="form-group"><label>Deporte</label>
+        <select id="atl-deporte"><option>Fútbol</option><option>Natación</option><option>Atletismo</option><option>Baloncesto</option><option>Gimnasia</option></select>
+      </div>
+      <div class="form-group"><label>Escuela</label>
+        <select id="atl-escuela"></select>
+      </div>
+      <div class="form-group"><label>Nivel</label>
+        <select id="atl-nivel"><option>Principiante</option><option>Intermedio</option><option>Avanzado</option><option>Élite</option></select>
+      </div>
+      <div class="form-group"><label>Email (Tutor)</label><input type="email" id="atl-email" placeholder="email@ejemplo.com" /></div>
+      <div class="form-group"><label>Teléfono</label><input type="tel" id="atl-tel" placeholder="0999-999-999" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-atleta')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarAtleta()">Registrar Atleta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Entrenador -->
+<div class="modal-overlay" id="modal-entrenador">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">NUEVO ENTRENADOR</div>
+      <span class="modal-close" onclick="closeModal('modal-entrenador')">✕</span>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Nombre Completo</label><input type="text" id="ent-nombre" placeholder="Nombre completo" /></div>
+      <div class="form-group"><label>Especialidad</label>
+        <select id="ent-esp"><option>Fútbol</option><option>Natación</option><option>Atletismo</option><option>Baloncesto</option><option>Gimnasia</option></select>
+      </div>
+      <div class="form-group"><label>Escuela Asignada</label><select id="ent-escuela"></select></div>
+      <div class="form-group"><label>Certificación</label>
+        <select id="ent-cert"><option>Nivel A</option><option>Nivel B</option><option>Nivel C</option><option>FIFA Pro</option><option>FINA</option></select>
+      </div>
+      <div class="form-group"><label>Email</label><input type="email" id="ent-email" placeholder="email@ejemplo.com" /></div>
+      <div class="form-group"><label>Salario Mensual ($)</label><input type="number" id="ent-salario" placeholder="800" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-entrenador')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEntrenador()">Registrar Entrenador</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Horario -->
+<div class="modal-overlay" id="modal-horario">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">NUEVA CLASE</div>
+      <span class="modal-close" onclick="closeModal('modal-horario')">✕</span>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Nombre de la Clase</label><input type="text" id="hor-nombre" placeholder="Ej: Técnica de Natación" /></div>
+      <div class="form-group"><label>Deporte</label>
+        <select id="hor-deporte"><option>Fútbol</option><option>Natación</option><option>Atletismo</option><option>Baloncesto</option><option>Gimnasia</option></select>
+      </div>
+      <div class="form-group"><label>Día</label>
+        <select id="hor-dia"><option>Lun</option><option>Mar</option><option>Mié</option><option>Jue</option><option>Vie</option><option>Sáb</option><option>Dom</option></select>
+      </div>
+      <div class="form-group"><label>Hora</label><input type="time" id="hor-hora" value="08:00" /></div>
+      <div class="form-group"><label>Entrenador</label><select id="hor-entrenador"></select></div>
+      <div class="form-group"><label>Cancha / Lugar</label><input type="text" id="hor-lugar" placeholder="Ej: Cancha A1" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-horario')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarHorario()">Guardar Clase</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+<!-- ==================== JAVASCRIPT ES6+ ==================== -->
+<script src="js/script.js"></script>
+</body>
+</html>
