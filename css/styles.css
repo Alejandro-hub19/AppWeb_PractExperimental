@@ -570,3 +570,38 @@ tr:hover td {
   transform: rotate(15deg) scale(1.1);
   background: var(--brand);
 }
+
+/* ===== CORRECCIONES DE CONTRASTE ACCESIBILIDAD ===== */
+:root {
+  --muted: #3d4557;
+}
+
+.kpi-lbl {
+  color: #3d4557;
+}
+
+.kpi-trend.up {
+  color: #0d7a4e;
+}
+
+.kpi-trend.down {
+  color: #b01e1e;
+}
+
+.badge-success { background: #dcf5eb; color: #0a4f30; }
+.badge-warning { background: #fff4d9; color: #7a4a00; }
+.badge-danger  { background: #ffe8e8; color: #7a1212; }
+.badge-info    { background: #dbeafe; color: #0f2d7a; }
+.badge-purple  { background: #ede9fe; color: #3b1499; }
+
+.text-muted {
+  color: #3d4557;
+}
+
+.nav-section {
+  color: rgba(255,255,255,.6);
+}
+
+.logo-sub {
+  color: rgba(255,255,255,.7);
+}
