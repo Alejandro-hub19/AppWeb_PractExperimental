@@ -372,3 +372,201 @@
       border-top: 1px solid var(--border);
       font-family: var(--font-mono);
     }
+    /* ===== GRID EXPLÍCITO - LAYOUT PRINCIPAL ===== */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-rows: auto;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.api-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* ===== FLEXBOX EN COMPONENTES ===== */
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ===== ANIMACIONES @keyframes ===== */
+
+/* Entrada de las KPI cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kpi-card {
+  animation: fadeInUp 0.4s ease both;
+}
+.kpi-card:nth-child(1) { animation-delay: 0.05s; }
+.kpi-card:nth-child(2) { animation-delay: 0.1s; }
+.kpi-card:nth-child(3) { animation-delay: 0.15s; }
+.kpi-card:nth-child(4) { animation-delay: 0.2s; }
+
+/* Entrada del hero */
+@keyframes heroSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.page-hero {
+  animation: heroSlide 0.35s ease both;
+}
+
+/* Relleno de las barras del gráfico */
+@keyframes barGrow {
+  from { width: 0%; }
+  to   { width: var(--bar-w, 100%); }
+}
+
+.bar-fill {
+  animation: barGrow 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.2s;
+}
+
+/* Pulso en el badge LIVE del header */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.badge-success {
+  animation: pulse 2s ease-in-out infinite;
+}
+/* ===== HOVER EN KPI CARDS ===== */
+.kpi-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+.kpi-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== HOVER EN CARDS GENERALES ===== */
+.card {
+  transition: box-shadow 0.2s ease;
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== HOVER EN FILAS DE TABLA ===== */
+tr {
+  transition: background 0.15s ease;
+}
+tr:hover td {
+  background: var(--brand-light);
+}
+
+/* ===== HOVER EN BOTONES MEJORADO ===== */
+.btn {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13,110,253,0.2);
+}
+.btn:active {
+  transform: translateY(0px);
+}
+
+/* ===== HOVER EN NAV ITEMS ===== */
+.nav-item {
+  transition: all 0.18s ease;
+}
+.nav-item:hover {
+  padding-left: 26px;
+  border-left: 3px solid var(--accent);
+}
+
+/* ===== ANIMACIÓN AL CAMBIAR SECCIÓN ===== */
+@keyframes sectionFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section.active {
+  animation: sectionFade 0.3s ease both;
+}
+
+/* ===== HOVER EN ITEMS DEL SIDEBAR ===== */
+.nav-item .ni {
+  transition: transform 0.2s ease;
+}
+.nav-item:hover .ni {
+  transform: scale(1.2);
+}
+/* ===== PULSO EN BADGES DEL SIDEBAR ===== */
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.5);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 5px rgba(255, 87, 34, 0);
+  }
+}
+
+.nav-badge {
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+/* ===== HOVER EN LOGO "SE" ===== */
+.logo-icon {
+  transition: transform 0.3s ease, background 0.3s ease;
+  cursor: pointer;
+}
+
+.logo-icon:hover {
+  transform: rotate(15deg) scale(1.1);
+  background: var(--brand);
+}
